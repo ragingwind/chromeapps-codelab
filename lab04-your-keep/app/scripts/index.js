@@ -76,6 +76,12 @@ angular.module('keepApp', ['monospaced.elastic', 'uuid4'])
         scope.hover = false;
       };
 
+      scope.select = function(e) {
+        // Send selecting event to view controller and prevent progagation
+        !scope.focused && scope.$emit('keepcard:select');
+        e.stopPropagation();
+      };
+
       scope.done = function(e) {
         // If card has changed, notify change event
         if (!angular.equals(scope.cachedCard, scope.card)) {
@@ -84,12 +90,6 @@ angular.module('keepApp', ['monospaced.elastic', 'uuid4'])
 
         // Send editing done event to controller and prevent progagation
         scope.$emit('keepcard:done', {done: true});
-        e.stopPropagation();
-      };
-
-      scope.select = function(e) {
-        // Send selecting event to view controller and prevent progagation
-        !scope.focused && scope.$emit('keepcard:select');
         e.stopPropagation();
       };
 
@@ -135,10 +135,10 @@ angular.module('keepApp', ['monospaced.elastic', 'uuid4'])
 // App main controller
 .controller('MainCtrl', ['$scope', 'CardsStorage', 'uuid4',
   function($scope, CardsStorage, uuid4) {
-  var newCard = function() {
+  var newCard = function(title, text) {
     return {
-      title: '',
-      text: '',
+      title: title,
+      text: text,
       uuid: uuid4.generate()
     };
   };
