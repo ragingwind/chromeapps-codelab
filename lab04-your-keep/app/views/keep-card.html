@@ -1,9 +1,8 @@
 <div class="card" ng-click="select($event)" ng-mouseenter="hover = true" ng-mouseleave="hover = false">
   <div class="card-title" ng-if="card.title.length > 0 || focused">
     <input placeholder="Title" ng-model="card.title">
-    {{titleFocus}}
   </div>
-   <div class="card-text">
+  <div class="card-text">
     <textarea placeholder="Note" msd-elastic="\n" ng-model="card.text"
               spellcheck="true" maxlength="9999" aria-multiline="true" rows="1">
     </textarea>
@@ -17,5 +16,5 @@
     <button role="done" ng-click="done($event)" ng-if="focused">
       Done
     </button>
-   </div>
+  </div>
 </div>
