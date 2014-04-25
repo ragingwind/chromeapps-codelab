@@ -1,0 +1,27 @@
+<link rel="import" href="../bower_components/polymer/polymer.html"/>
+
+<polymer-element name="x-thumbnail" attributes="src widths width selector class resize lazyload scrollDelay">
+
+<template>
+<style>
+    x-imager img {
+        max-width: 100%;
+    }
+</style>
+<div id="placeholder" class="{{selector}}" data-src="{{src}}" data-width="{{width}}"></div>
+</template>
+
+<script>
+    Polymer('x-thumbnail', {
+        widths: '',
+        selector: 'delayed-image-load',
+        class: '',
+        resize: true,
+        lazyload: false,
+        scrollDelay: 0,
+        ready: function() {
+            console.log(this.shadowRoot.querySelectorAll('.' + this.selector))
+        }
+    })
+</script>
+</polymer-element>
