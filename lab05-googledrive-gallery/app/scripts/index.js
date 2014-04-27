@@ -2,8 +2,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Add event handler to remove cached token if we've got an errors
     document.getElementsByTagName('x-thumbnail')[0].addEventListener('on-error', function(e) {
-        console.log('error', e.detail.token);
-        chrome.identity.removeCachedAuthToken({'token': e.detail.token});
+        console.log('error', e);
+        chrome.identity.removeCachedAuthToken({'token': e.detail.token}, function() {
+        });
     });
 
     // Add event handler to handle event for downloading image
@@ -13,6 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Request or reading cache a token
     chrome.identity.getAuthToken({ 'interactive': true }, function(token) {
-        document.getElementsByTagName('x-thumbnail')[0].token = token;
+        document.getElementsByTagName('x-thumbnail')[0].setAttribute('token', token);
     });
 }, false);

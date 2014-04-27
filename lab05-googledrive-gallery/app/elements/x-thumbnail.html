@@ -69,6 +69,7 @@
     }
 
     Polymer('x-thumbnail', {
+        token: null,
         metadata: [],
         viewerClicked: function() {
             this.$.viewerframe.style.backgroundImage = 'none';
@@ -81,10 +82,9 @@
                 this.$.viewerframe.style.display = 'block';
             }.bind(this));
         },
-        token: '',
         tokenChanged: function(oldVal, newVal) {
             // https://github.com/GoogleChrome/chrome-app-samples/blob/master/gdrive/js/gdocs.js
-            var token = newVal;
+            var token = newVal || oldVal;
             var metadata = this.metadata;
             var url = 'https://www.googleapis.com/drive/v2/files?q=fullText contains \'jpg\'';
 

@@ -10,7 +10,7 @@
   		"https://*/*"
   	],
     "oauth2": {
-      "client_id": "431981738407-rlgoltv5nan29i0982tk2bnhj6qbi4b0.apps.googleusercontent.com",
+      "client_id": "431981738407-a9q98tbg6s48553u76qn3btn22p9i05c.apps.googleusercontent.com",
       "scopes": [
         "https://www.googleapis.com/auth/drive"
       ]
