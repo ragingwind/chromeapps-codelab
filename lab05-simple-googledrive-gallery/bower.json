@@ -1,9 +1,0 @@
-{
-  "name": "gamp",
-  "version": "0.0.0",
-  "dependencies": {},
-  "devDependencies": {
-    "platform": "Polymer/platform#~0.2.0",
-    "polymer": "Polymer/polymer#~0.2.0"
-  }
-}

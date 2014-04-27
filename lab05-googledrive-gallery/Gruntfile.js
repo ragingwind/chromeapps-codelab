@@ -1,4 +1,4 @@
-// Generated on 2014-04-21 using generator-chromeapp 0.2.7
+// Generated on 2014-04-25 using generator-chromeapp 0.2.7
 'use strict';
 
 // # Globbing
@@ -48,6 +48,13 @@ module.exports = function (grunt) {
             styles: {
                 files: ['<%= config.app %>/styles/{,*/}*.css'],
                 tasks: [],
+                options: {
+                    livereload: true
+                }
+            },
+            vulcanize: {
+                files: ['<%= config.app %>/elements/{,*/}*.html'],
+                tasks: ['vulcanize'],
                 options: {
                     livereload: true
                 }
@@ -308,7 +315,7 @@ module.exports = function (grunt) {
         compress: {
             dist: {
                 options: {
-                    archive: 'package/gamp-<%= config.manifest.version %>.zip'
+                    archive: 'package/lab05-<%= config.manifest.version %>.zip'
                 },
                 files: [{
                     expand: true,
@@ -317,19 +324,29 @@ module.exports = function (grunt) {
                     dest: ''
                 }]
             }
+        },
+        vulcanize: {
+            default: {
+                options: {
+                    csp: true,
+                },
+                files: {
+                    '<%= config.app %>/build.html': '<%= config.app %>/elements/*.html'
+                }
+            }
         }
     });
 
     grunt.registerTask('debug', function (platform) {
         var watch = grunt.config('watch');
         platform = platform || 'chrome';
-        
+
 
         // Configure style task for debug:server task
         if (platform === 'server') {
             watch.styles.tasks = ['newer:copy:styles'];
             watch.styles.options.livereload = false;
-            
+
         }
 
         // Configure updated watch task
@@ -337,6 +354,7 @@ module.exports = function (grunt) {
 
         grunt.task.run([
             'clean:' + platform,
+            'vulcanize',
             'concurrent:' + platform,
             'connect:' + platform,
             'watch'

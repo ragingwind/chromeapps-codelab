@@ -1,0 +1,142 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
+<polymer-element name="x-thumbnail" attributes='token'>
+
+<template>
+<style>
+    :host #thumbnails {
+        width: 500px;
+        height: 500px;
+        overflow: hidden;
+        overflow-y: scroll;
+    }
+
+    :host #thumbnails ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    :host #thumbnails ul li {
+        float: left;
+        padding: 0;
+        margin: 0;
+        width:100px;
+        height:100px;
+    }
+
+    :host #thumbnails img {
+        width:100px;
+        height:100px;
+        cursor: pointer;
+    }
+
+    :host #viewerframe {
+        position:absolute;
+        display:none;
+        top:0;
+        left:0;
+        width:500px;
+        height:500px;
+        background-color: black;
+        background-size: cover;
+        background-repeat: no-repeat;
+        cursor: pointer;
+    }
+
+</style>
+<div id="viewerframe" on-click="{{viewerClicked}}"></div>
+<div id="thumbnails">
+    <ul>
+    <template repeat="{{data in metadata}}">
+        <li on-click="{{imageSelected}}" data-id="{{data.id}}"><img src="{{data.thumbnail}}"></li>
+    </template>
+</ul>
+</div>
+
+</template>
+
+<script>
+    function downloadImage(src, token, cb) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', src, true);
+        xhr.responseType = 'blob';
+        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+        xhr.onload = function() {
+            cb(window.webkitURL.createObjectURL(this.response));
+        }
+        xhr.send();
+    }
+
+    Polymer('x-thumbnail', {
+        metadata: [],
+        viewerClicked: function() {
+            this.$.viewerframe.style.backgroundImage = 'none';
+            this.$.viewerframe.style.display = 'none';
+        },
+        imageSelected: function(event, detail, sender) {
+            var src = 'https://drive.google.com/uc?id=' + sender.getAttribute('data-id')
+            downloadImage(src, this.token, function(src) {
+                this.$.viewerframe.style.backgroundImage = 'url(' + src + ')';
+                this.$.viewerframe.style.display = 'block';
+            }.bind(this));
+        },
+        token: '',
+        tokenChanged: function(oldVal, newVal) {
+            // https://github.com/GoogleChrome/chrome-app-samples/blob/master/gdrive/js/gdocs.js
+            var token = newVal;
+            var metadata = this.metadata;
+            var url = 'https://www.googleapis.com/drive/v2/files?q=fullText contains \'jpg\'';
+
+            var fireError = function (token) {
+                this.fire('on-error', {token: token});
+            }.bind(this);
+
+            var fireDownloaded = function () {
+                this.fire('on-download');
+            }.bind(this);
+
+            var downloadThumbnails = function (images, cb) {
+                var image = images.shift();
+                cb = cb || function() {};
+
+                if (!image) {
+                    cb();
+                    return;
+                }
+
+                console.log('Downloading thumbnail', image.thumbnailLink);
+                downloadImage(image.thumbnailLink, token, function(src) {
+                    metadata.push({
+                        id: image.id,
+                        thumbnail: src
+                    });
+
+                    downloadThumbnails(images, cb);
+                });
+            };
+
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url);
+            xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+            xhr.onload = function () {
+                if (this.status === 401) {
+                    console.error('Will remove auth token');
+                    fireError(token);
+                    return;
+                } else if ((this.status & 0xC8) !== 200) {
+                    console.error('We\'ve got an error', this.status);
+                    return;
+                }
+
+                downloadThumbnails(JSON.parse(xhr.responseText).items, fireDownloaded);
+            }
+            xhr.send();
+        }
+    });
+</script>
+
+</polymer-element>
+
+
